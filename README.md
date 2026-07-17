@@ -1,11 +1,38 @@
-# AI-First PO workflows
+<div align="center">
 
-A reusable team of **skills** and **subagents** for [Claude Code](https://claude.com/claude-code)
-that runs the full Product Owner loop — **strategy → prototype → evals → validate → PRD → Jira → production** — with an Opus orchestrator dispatching cheap Sonnet workers.
+# 🧭 AI-First PO workflows
 
-Built for a **validation-first** way of working: every feature idea is proven on a
-throwaway, touchable prototype *before* any PRD, Jira, or production commitment.
-Only validated winners get handed to the production dev team.
+**A reusable team of skills + subagents for [Claude Code](https://claude.com/claude-code) that runs the full Product Owner loop.**
+
+*strategy → prototype → evals → validate → PRD → Jira → production*
+
+<br/>
+
+![Claude Code](https://img.shields.io/badge/Claude%20Code-skills%20%2B%20agents-6C4BF6)
+![Orchestrator](https://img.shields.io/badge/orchestrator-Opus-6C4BF6)
+![Workers](https://img.shields.io/badge/workers-Sonnet-1FA97A)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+
+</div>
+
+---
+
+> Built for a **validation-first** way of working: every feature idea is proven on a
+> throwaway, touchable prototype *before* any PRD, Jira, or production commitment.
+> Only validated winners get handed to the production dev team.
+
+## Contents
+
+- [Why this exists](#why-this-exists)
+- [Quick start](#-quick-start)
+- [The flow](#-the-flow)
+- [The team](#-the-team)
+- [Design principles](#-design-principles)
+- [Install](#️-install)
+- [Usage](#️-usage)
+- [Customize](#️-customize)
+- [Credits](#-credits)
 
 ---
 
@@ -14,16 +41,33 @@ Only validated winners get handed to the production dev team.
 Most PO tooling stops at documents. This turns the PO loop into an operational
 system an AI-First PO actually runs day to day:
 
-- **Discovery and strategy** without a research bottleneck (parallel researchers).
-- **Prototype-first validation** — put a tangible thing in front of people fast.
-- **Evals** — replace "does this feel good?" with measurable, repeatable criteria
-  and a golden-set regression suite.
-- **Backlog + production handoff** only for proven winners.
-- **Stakeholder comms** that lead with the tangible outcome.
+| | |
+|---|---|
+| 🔍 **Discovery & strategy** | no research bottleneck — parallel researcher agents |
+| 🧪 **Prototype-first validation** | put a tangible thing in front of people fast |
+| 📊 **Evals** | replace "does this feel good?" with measurable criteria + a golden-set regression suite |
+| 📋 **Backlog + handoff** | production spec + Jira only for proven winners |
+| 📣 **Stakeholder comms** | lead with the tangible outcome, not the doc |
 
 ---
 
-## The flow
+## 🚀 Quick start
+
+```bash
+git clone https://github.com/mateusz0909/ai-first-po-wf.git
+cd ai-first-po-wf
+./install.sh            # copies skills + agents into ~/.claude/
+```
+
+Start a new Claude Code session, then:
+
+```
+/po-strategy should we build saved filter views?
+```
+
+---
+
+## 🔁 The flow
 
 ```mermaid
 flowchart TD
@@ -39,29 +83,33 @@ flowchart TD
     U[po-stakeholder-update] -.demo the tangible thing.- V
 ```
 
-- **po-mvp** is early and disposable — speed to signal, not polish. Runs locally.
-- **po-evals** feeds **po-validate**; it does not replace the human signal.
+- **`po-mvp`** is early and disposable — speed to signal, not polish. Runs locally.
+- **`po-evals`** feeds **`po-validate`**; it does not replace the human signal.
 - **Jira + production only after a validated winner.** `kill` is a valid outcome.
 
-See [docs/flow.md](docs/flow.md) for the detailed walkthrough.
+📖 Full walkthrough: **[docs/flow.md](docs/flow.md)**
 
 ---
 
-## The team
+## 👥 The team
 
-### Skills — orchestrators (run on your main Opus thread)
+### Skills — orchestrators
+
+> Run on your main **Opus** thread. Each owns its template + quality bar + checklist + worked example.
 
 | Skill | Role |
 |-------|------|
-| `po-strategy` | Discovery → decision-ready strategy brief + hypothesis (fans out researchers) |
-| `po-mvp` | Idea/hypothesis → fast, touchable prototype run locally (prototype mode) |
-| `po-evals` | Golden set + rubric scoring + regression suite → measurable ship/iterate/kill evidence |
-| `po-validate` | Prototype → decision from human signal + eval evidence (iterate/winner/kill) |
-| `po-prd` | Validated winner → production-grade PRD citing the prototype |
-| `po-stakeholder-update` | Work done → status / exec / launch / Slack updates |
-| `product-owner` | PRD → Jira epics/stories/tasks + print-ready roadmap HTML |
+| 🧭 `po-strategy` | Discovery → decision-ready strategy brief + hypothesis (fans out researchers) |
+| 🧪 `po-mvp` | Idea/hypothesis → fast, touchable prototype run locally (prototype mode) |
+| 📊 `po-evals` | Golden set + rubric scoring + regression suite → measurable ship/iterate/kill evidence |
+| ✅ `po-validate` | Prototype → decision from human signal + eval evidence (iterate/winner/kill) |
+| 📝 `po-prd` | Validated winner → production-grade PRD citing the prototype |
+| 📣 `po-stakeholder-update` | Work done → status / exec / launch / Slack updates |
+| 📋 `product-owner` | PRD → Jira epics/stories/tasks + print-ready roadmap HTML |
 
-### Agents — workers (`model: sonnet`, dispatched by the skills)
+### Agents — workers
+
+> `model: sonnet`, dispatched by the skills. Cheap, isolated, parallel.
 
 | Agent | Role |
 |-------|------|
@@ -76,7 +124,7 @@ See [docs/flow.md](docs/flow.md) for the detailed walkthrough.
 
 ---
 
-## Design principles
+## 🧠 Design principles
 
 - **Orchestrators are skills, workers are agents.** In Claude Code a subagent
   cannot spawn its own subagents, so the "manager" is your main thread (Opus)
@@ -91,41 +139,41 @@ See [docs/flow.md](docs/flow.md) for the detailed walkthrough.
 
 ---
 
-## Install
+## ⚙️ Install
 
 Requires Claude Code. Skills and agents are auto-discovered from `~/.claude/`.
 
-### Global (all your projects)
 ```bash
-./install.sh            # copies skills + agents into ~/.claude/
-```
-
-### Project-local (one repo)
-```bash
-./install.sh --project /path/to/repo    # copies into <repo>/.claude/
-```
-
-### Manual
-```bash
-cp -R skills/*   ~/.claude/skills/
-cp    agents/*.md ~/.claude/agents/
+./install.sh                              # global — all your projects
+./install.sh --project /path/to/repo      # project-local — one repo
 ```
 
 Restart Claude Code (or start a new session) so new **agents** load. Skills are
-available immediately. Verify with `/po-strategy` (skill) and by checking the
-agent list.
+available immediately.
 
-### Optional integrations
-- **Jira** (`po-story-writer`, roadmap): the Atlassian MCP server connected in
+<details>
+<summary><b>Manual install</b></summary>
+
+```bash
+cp -R skills/*    ~/.claude/skills/
+cp    agents/*.md ~/.claude/agents/
+```
+</details>
+
+<details>
+<summary><b>Optional integrations</b></summary>
+
+- **Jira** (`po-story-writer`, roadmap) — the Atlassian MCP server connected in
   Claude Code. Without it, issues are drafted locally to `jira-issues/`.
-- **Web research** (`po-researcher`): built-in WebSearch/WebFetch, or the
+- **Web research** (`po-researcher`) — built-in WebSearch/WebFetch, or the
   `tavily-*` / `agent-reach` skills if you have them.
+</details>
 
 ---
 
-## Usage
+## ▶️ Usage
 
-```
+```text
 /po-strategy should we build saved filter views?      # frame + research + brief
 /po-mvp prototype the top bet                          # touchable local prototype
 run evals on the saved-views prototype                 # golden set + scoring
@@ -138,18 +186,22 @@ agent directly.
 
 ---
 
-## Customize
+## 🛠️ Customize
 
 Every skill is a plain `SKILL.md` (Markdown + YAML frontmatter); every agent is a
-`.md` with `name`/`description`/`model`/`tools` frontmatter. Edit them to match
-your domain, Jira project, tone, or eval dimensions. Keep templates in the skill
-so agents stay thin.
+`.md` with `name` / `description` / `model` / `tools` frontmatter. Edit them to
+match your domain, Jira project, tone, or eval dimensions. Keep templates in the
+skill so agents stay thin.
 
 ---
 
-## Credits
+## 🙏 Credits
 
 Structure and conventions (hierarchical context, quality-bar + checklist + worked
 example per skill, delegation discipline, predictable artifact tree) were informed
 by the [team-os-example-repo](https://github.com/in-the-weeds-hannah-stulberg/team-os-example-repo)
 pattern.
+
+<div align="center">
+<sub>Built with Claude Code · MIT licensed</sub>
+</div>
