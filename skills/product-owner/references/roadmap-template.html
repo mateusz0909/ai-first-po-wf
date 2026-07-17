@@ -1,0 +1,366 @@
+<!--
+  ROADMAP TEMPLATE — single-file, self-contained, print-to-PDF (A4 portrait).
+  This is the canonical AdVantage-style roadmap format. To produce a new roadmap:
+    1. Copy this file whole.
+    2. Edit ONLY the cover meta, the table rows, the timeline rows, the milestones,
+       the Gantt rows, and the deferred table. Do NOT change the <style> block —
+       the look (badges, tables, Gantt, print rules) is the deliverable.
+    3. Keep the status-badge vocabulary fixed (see Legend): Production / POC-validated
+       / Partial / GAP / PO-led. Pick the badge that matches reality — never invent green.
+    4. Gantt bars are absolute-positioned: left% = (start month index / 9) * 100,
+       width% = (months spanned / 9) * 100, over a 9-month Apr–Dec grid. Adjust the
+       month labels + grid divisor if the horizon differs.
+    5. Milestones are diamonds: <div class="ms" style="left:NN%" title="..."></div>.
+    6. Apply the Product Owner CONTENT QUALITY BAR to every row: one-line entries,
+       exact file/function references in Notes (e.g. <code>DashboardPage.jsx</code>,
+       <code>/api/...</code>), no marketing prose, mark unknowns [TODO: ...].
+  The data below is a WORKED EXAMPLE (AdVantage 2026 v1.7) — replace it, keep the shell.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AdVantage 2026 — Roadmap</title>
+<style>
+  :root{
+    --ink:#1a2230; --muted:#5b6675; --line:#e3e7ee; --line2:#eef1f6;
+    --accent:#2d4a7a; --accent-soft:#eef3fb;
+    --green:#1f8a4c; --green-bg:#e6f4ec;
+    --blue:#1f6fb2; --blue-bg:#e7f1fa;
+    --amber:#b9791a; --amber-bg:#fbf1de;
+    --gray:#6b7280; --gray-bg:#eef0f3;
+    --purple:#6b4bb0; --purple-bg:#f0eafb;
+    --crit:#c0492f; --crit-bg:#f9e7e2;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink); margin:0; background:#f4f6f9; line-height:1.5;
+    font-size:13px;
+  }
+  .page{max-width:1040px; margin:0 auto; background:#fff; padding:0;}
+
+  /* ---- Cover band ---- */
+  .cover{background:linear-gradient(135deg,#223a63 0%,#2d4a7a 55%,#3a6098 100%);
+    color:#fff; padding:34px 40px 28px;}
+  .cover .eyebrow{font-size:11px; letter-spacing:.16em; text-transform:uppercase; opacity:.8; font-weight:600;}
+  .cover h1{margin:6px 0 4px; font-size:30px; font-weight:700; letter-spacing:-.01em;}
+  .cover .sub{font-size:14px; opacity:.92; font-weight:400;}
+  .cover .meta{margin-top:16px; display:flex; flex-wrap:wrap; gap:8px 22px; font-size:11.5px; opacity:.93;}
+  .cover .meta b{font-weight:600;}
+
+  .body{padding:24px 40px 40px;}
+
+  h2{font-size:17px; margin:30px 0 12px; color:var(--accent); font-weight:700;
+    padding-bottom:6px; border-bottom:2px solid var(--accent); letter-spacing:-.01em;
+    break-after:avoid;}
+  h3{font-size:13px; margin:18px 0 8px; color:var(--ink); font-weight:700;
+    text-transform:uppercase; letter-spacing:.05em; break-after:avoid;}
+
+  /* ---- Legend ---- */
+  .legend{display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 14px;}
+  .legend .chip{font-size:10.5px;}
+
+  /* ---- Status badges ---- */
+  .badge{display:inline-block; padding:2px 8px; border-radius:11px; font-size:10px;
+    font-weight:700; white-space:nowrap; line-height:1.5; border:1px solid transparent;}
+  .b-prod{color:var(--green); background:var(--green-bg); border-color:#c4e4d1;}
+  .b-poc{color:var(--blue); background:var(--blue-bg); border-color:#c5def1;}
+  .b-partial{color:var(--amber); background:var(--amber-bg); border-color:#ecd6ab;}
+  .b-gap{color:var(--gray); background:var(--gray-bg); border-color:#d8dce2;}
+  .b-po{color:var(--purple); background:var(--purple-bg); border-color:#dbcdf2;}
+
+  /* ---- Tables ---- */
+  table{width:100%; border-collapse:collapse; margin:6px 0 14px; font-size:11px;}
+  thead th{background:var(--accent); color:#fff; text-align:left; font-weight:600;
+    font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; padding:7px 9px;}
+  tbody td{padding:7px 9px; border-bottom:1px solid var(--line); vertical-align:top;}
+  tbody tr:nth-child(even){background:#f8fafc;}
+  tbody tr{break-inside:avoid;}
+  td .feat{font-weight:700; color:var(--ink);}
+  td .num{color:var(--muted); font-weight:700;}
+  .prd{color:var(--muted); font-size:10px;}
+  .notes{color:#3a4456; font-size:10px;}
+  .size{font-weight:600; white-space:nowrap;}
+  .dash{color:#aeb6c2;}
+  code{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace; font-size:9.5px;
+    background:#eef1f6; padding:1px 4px; border-radius:4px; color:#3a4456;}
+
+  col.c-num{width:26px;} col.c-feat{width:150px;} col.c-prd{width:165px;}
+  col.c-status{width:88px;} col.c-size{width:78px;}
+
+  /* timeline tables */
+  .tl col.c-deliv{width:auto;} .tl col.c-type{width:150px;} .tl col.c-cov{width:230px;}
+  .type{font-weight:600; white-space:nowrap; font-size:10.5px;}
+
+  .milestone{font-size:11px; margin:2px 0; color:var(--ink);}
+  .milestone .m{display:inline-block; width:9px; height:9px; transform:rotate(45deg);
+    background:var(--accent); margin-right:7px; vertical-align:middle;}
+  .cap{font-size:10.5px; color:var(--crit); font-weight:600; margin:2px 0;}
+
+  .note-box{background:var(--accent-soft); border-left:3px solid var(--accent);
+    padding:8px 12px; font-size:10.5px; color:#33425c; border-radius:0 5px 5px 0; margin:10px 0 4px;}
+
+  /* ---- Gantt ---- */
+  .gantt{margin:10px 0 6px; border:1px solid var(--line); border-radius:6px; overflow:hidden;}
+  .g-months{display:flex; padding-left:200px; background:#f3f6fa; border-bottom:1px solid var(--line);}
+  .g-months span{flex:1; text-align:center; font-size:9px; font-weight:700; color:var(--muted);
+    text-transform:uppercase; letter-spacing:.05em; padding:5px 0; border-left:1px solid var(--line2);}
+  .g-sec{font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--accent); background:#fafbfd; padding:4px 10px; border-bottom:1px solid var(--line2);}
+  .g-row{display:flex; align-items:center; height:25px; border-bottom:1px solid var(--line2);}
+  .g-row:last-child{border-bottom:none;}
+  .g-lbl{width:200px; flex:0 0 200px; font-size:9.5px; color:var(--ink); padding:0 10px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .g-track{position:relative; flex:1; height:100%; }
+  /* month gridlines behind bars */
+  .g-track::before{content:""; position:absolute; inset:0;
+    background-image:repeating-linear-gradient(to right,transparent 0,transparent calc(11.111% - 1px),var(--line2) calc(11.111% - 1px),var(--line2) 11.111%);}
+  .bar{position:absolute; top:6px; height:13px; border-radius:3px; }
+  .bar.done{background:var(--green);}
+  .bar.active{background:var(--blue);}
+  .bar.future{background:#9db8d8;}
+  .bar.crit{background:var(--crit-bg); border:1px dashed var(--crit);}
+  .ms{position:absolute; top:5px; width:11px; height:11px; transform:rotate(45deg) translateX(-50%);
+    background:#caa23a; border:1px solid #9a7a22;}
+  .g-legend{display:flex; gap:14px; flex-wrap:wrap; font-size:9.5px; color:var(--muted); margin:8px 0 2px;}
+  .g-legend i{display:inline-block; width:13px; height:9px; border-radius:2px; margin-right:5px; vertical-align:middle;}
+
+  footer{margin-top:26px; padding-top:12px; border-top:1px solid var(--line);
+    font-size:9.5px; color:var(--muted); display:flex; justify-content:space-between;}
+
+  .toolbar{position:sticky; top:0; z-index:10; background:#1a2230; color:#fff; padding:8px 14px;
+    font-size:12px; display:flex; gap:12px; align-items:center; justify-content:flex-end;}
+  .toolbar button{font:inherit; font-size:12px; background:#3a6098; color:#fff; border:none;
+    padding:6px 14px; border-radius:6px; cursor:pointer; font-weight:600;}
+  .toolbar button:hover{background:#4a73b0;}
+  .toolbar span{margin-right:auto; opacity:.75; font-size:11px;}
+
+  @media print{
+    body{background:#fff; font-size:10.5px;}
+    .toolbar{display:none;}
+    .page{max-width:none; width:100%;}
+    .cover{padding:26px 30px 20px;}
+    .body{padding:16px 30px 0;}
+    h2{margin-top:18px;}
+    @page{size:A4 portrait; margin:11mm;}
+    .gantt, table, .note-box{break-inside:avoid;}
+    a{color:inherit; text-decoration:none;}
+  }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span>Tip: Print → Save as PDF (A4 portrait, enable “Background graphics”).</span>
+  <button onclick="window.print()">Save as PDF / Print</button>
+</div>
+
+<div class="page">
+  <!-- COVER: edit eyebrow / h1 / sub / meta to match the program. -->
+  <header class="cover">
+    <div class="eyebrow">ASM × Google · Product Roadmap</div>
+    <h1>AdVantage 2026</h1>
+    <div class="sub">PRD mapping · delivery timeline · 2027 deferrals</div>
+    <div class="meta">
+      <span><b>Version</b> 1.7</span>
+      <span><b>Date</b> 29 May 2026</span>
+      <span><b>Based on</b> AdVantage 2026 PRD v2</span>
+      <span><b>Reconciled</b> against POC code 2026-05-29</span>
+      <span><b>Cadence</b> 3-week sprints</span>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <!-- SECTION 1: Feature → source/PRD mapping, grouped by delivery status. -->
+    <h2>Feature → PRD Mapping</h2>
+    <div class="legend">
+      <span class="badge b-prod">✅ Production</span>
+      <span class="badge b-poc">🧪 POC-validated</span>
+      <span class="badge b-partial">⚠️ Partial</span>
+      <span class="badge b-gap">❌ GAP (no POC)</span>
+      <span class="badge b-po">👤 PO-led</span>
+    </div>
+
+    <h3>Live in Production</h3>
+    <table>
+      <colgroup><col class="c-feat"><col class="c-prd"><col class="c-status"><col></colgroup>
+      <thead><tr><th>Capability</th><th>PRD Requirement</th><th>Status</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td class="feat">Text Asset Generation</td><td class="prd">P1 — Agentic Optimizer</td><td><span class="badge b-prod">Production</span></td><td class="notes">AI search ad copy (headlines, descriptions)</td></tr>
+        <tr><td class="feat">RSA A/B Testing + Statistical Significance</td><td class="prd">Scope — A/B Tests Enhanced</td><td><span class="badge b-prod">Production</span></td><td class="notes">Significance indicators complete end of April 2026</td></tr>
+        <tr><td class="feat">N-Gram Analysis</td><td class="prd">Scope — Creative Optimization Dashboards</td><td><span class="badge b-prod">Production</span></td><td class="notes">Search-term n-gram + wildcard, performance ranking</td></tr>
+        <tr><td class="feat">Brand Guidelines (basic)</td><td class="prd">P1 — Define/Ingest Brand Guidelines</td><td><span class="badge b-prod">Production</span></td><td class="notes">Manual text input in Search project</td></tr>
+        <tr><td class="feat">Image Analysis</td><td class="prd">P2 — Image Analyzer</td><td><span class="badge b-prod">Production</span></td><td class="notes">31-question audit; 6 diagnostics run under 4 compatibility pillars (Visibility / Actionability / Readability / Compliance)</td></tr>
+        <tr><td class="feat">Video Analysis</td><td class="prd">P2 — Video Analyzer</td><td><span class="badge b-prod">Production</span></td><td class="notes">Google ABCD (Attract / Brand / Connect / Direct), Shorts + long-form</td></tr>
+        <tr><td class="feat">Video File Upload + Batch</td><td class="prd">P2 — Video Asset Uploader</td><td><span class="badge b-prod">Production</span></td><td class="notes">YouTube URL, file upload, GCS path. <b>Batch live:</b> multiple URLs in one action → N independent jobs (≤20, shared brand config, partial failure independent)</td></tr>
+        <tr><td class="feat">Revision Tracking</td><td class="prd">P2 — Image Analyzer</td><td><span class="badge b-prod">Production</span></td><td class="notes">Re-upload → comparative FIXED / REGRESSION markers</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Planned &amp; In Build — 2026</h3>
+    <table>
+      <colgroup><col class="c-num"><col class="c-feat"><col class="c-prd"><col class="c-status"><col class="c-size"><col></colgroup>
+      <thead><tr><th>#</th><th>Feature</th><th>PRD Requirement</th><th>Status</th><th>Size</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="num">2</td>
+          <td class="feat">Brand + Image Optimizer</td>
+          <td class="prd">P1 — Define/ingest brand guidelines + P2 — GenAI Image Optimizer + P2 — Transparent AI reasoning</td>
+          <td><span class="badge b-poc">POC-validated</span></td>
+          <td class="size">L (~4 sprints)</td>
+          <td class="notes">7-agent strategy→execution pipeline + human review validated. <b>Deterministic compositor + live QA gates NOT validated — net-new.</b> RAG = pdf/image/text only (no URL); embeddings in SQLite (no vector DB).</td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td class="feat">Agentic Optimizer UI</td>
+          <td class="prd">P1 — Chat-based Agentic Optimizer (Gemini)</td>
+          <td><span class="badge b-partial">Partial</span></td>
+          <td class="size dash">N/A</td>
+          <td class="notes">Agentic approach already lives in the GenAI (Brand + Image Optimizer) workspace — user describes their vision and the multi-agent pipeline acts on it. Standalone <b>chat-based</b> optimizer scoped to AskSTAGE — not built standalone in AdVantage.</td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td class="feat">Image + Video Semantic Rollups</td>
+          <td class="prd">Cross-cutting Creative Intelligence layer</td>
+          <td><span class="badge b-poc">POC-validated</span></td>
+          <td class="size">M (~1 sprint)</td>
+          <td class="notes">Already built / persisted / rendered in POC — productionize + STAGE-harden only. Native frameworks unchanged.</td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td class="feat">Cross-Channel Dashboard</td>
+          <td class="prd">P1 — Cross-channel dashboard (STAGE UI) + P0 — Multi-modal data integration</td>
+          <td><span class="badge b-gap">GAP</span></td>
+          <td class="size">L (~2 sprints)</td>
+          <td class="notes">Default homepage from BQ (Adverity); top campaigns by type + KPI status. Existing <code>DashboardPage.jsx</code> is a Projects list, not this. Absorbs BQ read. Prereq: Adverity columns (start Q2).</td>
+        </tr>
+        <tr>
+          <td class="num">6</td>
+          <td class="feat">BQ Export / Metatagging</td>
+          <td class="prd">P2 — Creative schema + metatagging in BQ/GCP</td>
+          <td><span class="badge b-partial">Partial POC</span></td>
+          <td class="size">M (~1 sprint)</td>
+          <td class="notes">Export payload exists (<code>/api/creative-intelligence/export</code>: native + <code>semantic_dimensions</code> + <code>performance_context</code>); BQ write disabled in vendored detector (config). Manual sync, no schedule.</td>
+        </tr>
+        <tr>
+          <td class="num">7</td>
+          <td class="feat">Creative Fatigue Tracking</td>
+          <td class="prd">Scope — Creative fatigue: detect / diagnose / recommend</td>
+          <td><span class="badge b-gap">GAP</span></td>
+          <td class="size">M (~1 sprint)</td>
+          <td class="notes">Dashboard extension: KPI &gt;30% below benchmark/peak → on-demand Gemini diagnose → semantic dimension + link to optimizer.</td>
+        </tr>
+        <tr>
+          <td class="num">8</td>
+          <td class="feat">Video Optimizer (Veo)</td>
+          <td class="prd">P2 — Video Optimizer (Veo)</td>
+          <td><span class="badge b-po">PO-led</span></td>
+          <td class="size">PO-led</td>
+          <td class="notes">Local PO prototype + video demo, no dev capacity. Weak ABCD → prompt → Veo 1 clip. ABCD stays the methodology.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note-box"><b>PRD P0 — “Upload multiple creative formats in one workflow”:</b> already satisfied by the separate per-format project types (text / image / video).</div>
+
+    <!-- SECTION 2: Timeline — one h3 + .tl table per quarter, milestones/caps below each. -->
+    <h2>Timeline</h2>
+
+    <h3>Q2 2026 · Apr – Jun</h3>
+    <table class="tl">
+      <colgroup><col class="c-deliv"><col class="c-type"><col class="c-cov"></colgroup>
+      <thead><tr><th>Deliverable</th><th>Type</th><th>PRD Coverage</th></tr></thead>
+      <tbody>
+        <tr><td>A/B Test significance indicator</td><td class="type">✅ Completing (end Apr)</td><td class="prd">Scope — A/B Tests Enhanced</td></tr>
+        <tr><td>Video batch upload + processing (multiple YouTube URLs)</td><td class="type">✅ Shipped</td><td class="prd">P2 — Video Asset Uploader</td></tr>
+        <tr><td>Semantic layer implementation plan + shared data contract</td><td class="type">📄 Spec</td><td class="prd">Cross-cutting Creative Intelligence layer</td></tr>
+        <tr><td>Semantic layer POC validation in Brand + Image Optimizer</td><td class="type">🧪 POC</td><td class="prd">GenAI route-level Creative Dimensions</td></tr>
+        <tr><td>Brand management + GenAI Image Optimizer + transparent AI reasoning (starts → Q3)</td><td class="type">🏗️ Build</td><td class="prd">P1 — Brand Guidelines + P2 — Image Optimizer + P2 — AI Reasoning</td></tr>
+      </tbody>
+    </table>
+    <div class="milestone"><span class="m"></span><b>Milestone (PRD Q2):</b> STAGE UI MVP — brand ingestion + GenAI optimizer (shifted to early September).</div>
+
+    <h3>Q3 2026 · Jul – Sep</h3>
+    <table class="tl">
+      <colgroup><col class="c-deliv"><col class="c-type"><col class="c-cov"></colgroup>
+      <thead><tr><th>Deliverable</th><th>Type</th><th>PRD Coverage</th></tr></thead>
+      <tbody>
+        <tr><td>Brand + Image Optimizer + semantic strategy review + transparent AI reasoning (completes)</td><td class="type">🏗️ Build</td><td class="prd">P1 — Brand Guidelines + P2 — Image Optimizer + P2 — AI Reasoning</td></tr>
+        <tr><td>GenAI semantic dimensions propagate to generated asset metadata</td><td class="type">🏗️ Build</td><td class="prd">Part of Brand + Image Optimizer</td></tr>
+        <tr><td>Productionize Image + Video semantic rollups (already built in POC; STAGE-harden)</td><td class="type">🏗️ Build</td><td class="prd">P2 — Image Analyzer + P2 — Video Analyzer</td></tr>
+        <tr><td>Cross-Channel Dashboard + two-page navigation (starts → Q4)</td><td class="type">🏗️ Build</td><td class="prd">P1 — Dashboard + P0 — Multi-Modal Data</td></tr>
+      </tbody>
+    </table>
+    <div class="milestone"><span class="m"></span><b>Milestone (PRD July):</b> API call architecture and workflow operational in STAGE.</div>
+    <div class="cap">⚠ July is reduced capacity (developer vacations).</div>
+
+    <h3>Q4 2026 · Oct – Dec</h3>
+    <table class="tl">
+      <colgroup><col class="c-deliv"><col class="c-type"><col class="c-cov"></colgroup>
+      <thead><tr><th>Deliverable</th><th>Type</th><th>PRD Coverage</th></tr></thead>
+      <tbody>
+        <tr><td>Cross-Channel Dashboard with KPI benchmarks + semantic diagnostics (completes)</td><td class="type">🏗️ Build</td><td class="prd">P1 — Dashboard + P0 — Multi-Modal Data</td></tr>
+        <tr><td>BQ Export / Creative Metatagging with semantic layer JSON</td><td class="type">🏗️ Build</td><td class="prd">P2 — Creative schema in BQ/GCP</td></tr>
+        <tr><td>Creative Fatigue detection + semantic dimension diagnosis</td><td class="type">🏗️ Build</td><td class="prd">Scope — Creative Fatigue Tracking</td></tr>
+        <tr><td>Platform stabilization + client handover</td><td class="type">🔧 Harden</td><td class="prd">Cross-cutting</td></tr>
+        <tr><td>Video Optimizer POC (Veo) — PO-led local prototype + video demo</td><td class="type">🧪 POC (PO)</td><td class="prd">P2 — Video Optimizer (Veo)</td></tr>
+      </tbody>
+    </table>
+    <div class="milestone"><span class="m"></span><b>Milestone (PRD Q3→Q4):</b> Cross-channel analysis for 2+ clients.</div>
+    <div class="milestone"><span class="m"></span><b>Milestone (PRD Q4):</b> Image Optimizer rollout for 2+ clients.</div>
+    <div class="milestone"><span class="m"></span><b>Milestone (PRD late Q4):</b> Establish POC for Video Optimizer (Veo).</div>
+
+    <!-- SECTION 3: Gantt. left%/width% = month-index math over the month label count. -->
+    <h3>Gantt · Apr – Dec 2026</h3>
+    <div class="gantt">
+      <div class="g-months">
+        <span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+      </div>
+
+      <div class="g-sec">Q2 · Foundation</div>
+      <div class="g-row"><div class="g-lbl">A/B Significance (wrap-up)</div><div class="g-track"><div class="bar done" style="left:0%;width:10.6%"></div></div></div>
+      <div class="g-row"><div class="g-lbl">Video Batch Upload + processing</div><div class="g-track"><div class="bar done" style="left:11.0%;width:9.9%"></div></div></div>
+      <div class="g-row"><div class="g-lbl">GenAI Semantic Strategy Contract</div><div class="g-track"><div class="bar active" style="left:18.6%;width:5.8%"></div></div></div>
+      <div class="g-row"><div class="g-lbl">Brand + Image Optimizer</div><div class="g-track"><div class="bar future" style="left:22.6%;width:34.7%"></div><div class="ms" style="left:57.3%" title="STAGE UI MVP"></div></div></div>
+
+      <div class="g-sec">Q3 · Intelligence</div>
+      <div class="g-row"><div class="g-lbl">July reduced capacity</div><div class="g-track"><div class="bar crit" style="left:33.2%;width:11.0%"></div></div></div>
+      <div class="g-row"><div class="g-lbl">Image + Video Semantic Rollups</div><div class="g-track"><div class="bar future" style="left:58.4%;width:6.2%"></div></div></div>
+      <div class="g-row"><div class="g-lbl">Cross-Channel Dashboard</div><div class="g-track"><div class="bar future" style="left:65.7%;width:14.2%"></div></div></div>
+      <div class="g-row"><div class="g-lbl">BQ Export / Metatagging</div><div class="g-track"><div class="bar future" style="left:81.0%;width:6.6%"></div></div></div>
+      <div class="g-row"><div class="g-lbl">Creative Fatigue Tracking</div><div class="g-track"><div class="bar future" style="left:88.7%;width:6.6%"></div><div class="ms" style="left:95.3%" title="Cross-channel + BQ"></div></div></div>
+
+      <div class="g-sec">Q4 · Stabilization</div>
+      <div class="g-row"><div class="g-lbl">Video Optimizer Veo POC (PO-led)</div><div class="g-track"><div class="bar active" style="left:74.1%;width:20.1%"></div><div class="ms" style="left:94.2%" title="Veo POC demo"></div></div></div>
+      <div class="g-row"><div class="g-lbl">Stabilization + client handover</div><div class="g-track"><div class="bar future" style="left:89.1%;width:10.9%"></div></div></div>
+    </div>
+    <div class="g-legend">
+      <span><i class="bar done" style="position:static"></i>Done</span>
+      <span><i class="bar active" style="position:static"></i>In progress</span>
+      <span><i class="bar future" style="position:static"></i>Planned</span>
+      <span><i class="bar crit" style="position:static"></i>Reduced capacity</span>
+      <span><span class="ms" style="position:static;transform:rotate(45deg);display:inline-block;margin-right:8px"></span>Milestone</span>
+    </div>
+
+    <!-- SECTION 4: Deferred — what slipped out of scope and the honest reason. -->
+    <h2>Deferred to 2027</h2>
+    <table>
+      <colgroup><col class="c-feat"><col class="c-status"><col></colgroup>
+      <thead><tr><th>Feature</th><th>PRD Ref</th><th>Reason for Deferral</th></tr></thead>
+      <tbody>
+        <tr><td class="feat">GMP bid-stream optimizer</td><td class="prd">Scope</td><td class="notes">Complex DV360 API integration, attribution modeling. Too large for a small team in 2026.</td></tr>
+        <tr><td class="feat">Direct Google Ads API push</td><td class="prd">Scope</td><td class="notes">Depends on bid-stream optimizer + client approval workflows. Not standalone.</td></tr>
+        <tr><td class="feat">Video Optimizer (production)</td><td class="prd">P2</td><td class="notes">Veo is POC-grade in 2026. Production hardening, cost controls, CDN delivery → 2027.</td></tr>
+      </tbody>
+    </table>
+
+    <footer>
+      <span>AdVantage 2026 Roadmap · v1.7 · Based on AdVantage 2026 PRD v2</span>
+      <span>Confidential — ASM × Google</span>
+    </footer>
+  </div>
+</div>
+</body>
+</html>

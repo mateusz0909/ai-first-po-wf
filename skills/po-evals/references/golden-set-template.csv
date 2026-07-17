@@ -1,0 +1,4 @@
+id,input,expected,accuracy,tone,safety,score,notes
+1,"<real or realistic input>","<what a good output looks like / must contain>",,,,,"why this case matters (common path / known failure)"
+2,"","",,,,,""
+3,"","",,,,,""
