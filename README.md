@@ -4,7 +4,7 @@
 
 **A reusable team of skills + subagents for [Claude Code](https://claude.com/claude-code) that runs the full Product Owner loop.**
 
-*strategy → prototype → evals → validate → PRD → Jira → production*
+*discovery → prototype → evals → validate → PRD → Jira → production*
 
 <br/>
 
@@ -71,7 +71,9 @@ Start a new Claude Code session, then:
 
 ```mermaid
 flowchart TD
+    client([client brings a problem]) --> D[po-discovery<br/>frame + de-risk · workshop]
     idea([feature idea]) --> S[po-strategy<br/>frame + hypothesis]
+    D --> M
     S --> M[po-mvp<br/>prototype · local · touchable]
     M --> E[po-evals<br/>measurable evidence]
     E --> V[po-validate<br/>human signal + decision]
@@ -99,7 +101,8 @@ flowchart TD
 
 | Skill | Role |
 |-------|------|
-| 🧭 `po-strategy` | Discovery → decision-ready strategy brief + hypothesis (fans out researchers) |
+| 🤝 `po-discovery` | Client brings a problem → frame the real one + de-risk. Workshop design + **facilitator playbook** + problem statement / impact map / assumption map |
+| 🧭 `po-strategy` | Opportunity/bet framing → decision-ready strategy brief + hypothesis (fans out researchers) |
 | 🧪 `po-mvp` | Idea/hypothesis → fast, touchable prototype run locally (prototype mode) |
 | 📊 `po-evals` | Golden set + rubric scoring + regression suite → measurable ship/iterate/kill evidence |
 | ✅ `po-validate` | Prototype → decision from human signal + eval evidence (iterate/winner/kill) |
@@ -174,6 +177,7 @@ cp    agents/*.md ~/.claude/agents/
 ## ▶️ Usage
 
 ```text
+/po-discovery client wants a mobile app for field techs  # frame the real problem + prep the workshop
 /po-strategy should we build saved filter views?      # frame + research + brief
 /po-mvp prototype the top bet                          # touchable local prototype
 run evals on the saved-views prototype                 # golden set + scoring
